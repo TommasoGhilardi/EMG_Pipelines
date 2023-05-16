@@ -1,0 +1,350 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,IE=9,chrome=1"><meta name="generator" content="MATLAB 2021a"><title>Recommended processing pipeline: a step-by-step walkthrough</title><style type="text/css">.rtcContent { padding: 30px; } .S0 { margin: 3px 10px 5px 4px; padding: 0px; line-height: 28.8px; min-height: 0px; white-space: pre-wrap; color: rgb(213, 80, 0); font-family: Helvetica, Arial, sans-serif; font-style: normal; font-size: 24px; font-weight: 400; text-align: left;  }
+.S1 { margin: 2px 10px 9px 4px; padding: 0px; line-height: 21px; min-height: 0px; white-space: pre-wrap; color: rgb(0, 0, 0); font-family: Helvetica, Arial, sans-serif; font-style: normal; font-size: 14px; font-weight: 400; text-align: left;  }
+.S2 { margin: 20px 10px 5px 4px; padding: 0px; line-height: 20px; min-height: 0px; white-space: pre-wrap; color: rgb(60, 60, 60); font-family: Helvetica, Arial, sans-serif; font-style: normal; font-size: 20px; font-weight: 700; text-align: left;  }
+.S3 { margin: 15px 10px 5px 4px; padding: 0px; line-height: 18px; min-height: 0px; white-space: pre-wrap; color: rgb(60, 60, 60); font-family: Helvetica, Arial, sans-serif; font-style: normal; font-size: 17px; font-weight: 700; text-align: left;  }
+.CodeBlock { background-color: #F7F7F7; margin: 10px 0 10px 0;}
+.S4 { border-left: 1px solid rgb(233, 233, 233); border-right: 1px solid rgb(233, 233, 233); border-top: 1px solid rgb(233, 233, 233); border-bottom: 0px none rgb(0, 0, 0); border-radius: 4px 4px 0px 0px; padding: 6px 45px 0px 13px; line-height: 17.234px; min-height: 18px; white-space: nowrap; color: rgb(0, 0, 0); font-family: Menlo, Monaco, Consolas, "Courier New", monospace; font-size: 14px;  }
+.S5 { border-left: 1px solid rgb(233, 233, 233); border-right: 1px solid rgb(233, 233, 233); border-top: 0px none rgb(0, 0, 0); border-bottom: 1px solid rgb(233, 233, 233); border-radius: 0px 0px 4px 4px; padding: 0px 45px 4px 13px; line-height: 17.234px; min-height: 18px; white-space: nowrap; color: rgb(0, 0, 0); font-family: Menlo, Monaco, Consolas, "Courier New", monospace; font-size: 14px;  }
+.S6 { border-left: 1px solid rgb(233, 233, 233); border-right: 1px solid rgb(233, 233, 233); border-top: 0px none rgb(0, 0, 0); border-bottom: 0px none rgb(0, 0, 0); border-radius: 0px; padding: 0px 45px 0px 13px; line-height: 17.234px; min-height: 18px; white-space: nowrap; color: rgb(0, 0, 0); font-family: Menlo, Monaco, Consolas, "Courier New", monospace; font-size: 14px;  }
+.S7 { margin: 10px 10px 5px 4px; padding: 0px; line-height: 18px; min-height: 0px; white-space: pre-wrap; color: rgb(60, 60, 60); font-family: Helvetica, Arial, sans-serif; font-style: normal; font-size: 15px; font-weight: 700; text-align: left;  }
+.S8 { margin: 10px 10px 9px 4px; padding: 0px; line-height: 21px; min-height: 0px; white-space: pre-wrap; color: rgb(0, 0, 0); font-family: Helvetica, Arial, sans-serif; font-style: normal; font-size: 14px; font-weight: 400; text-align: left;  }
+.S9 { border-left: 1px solid rgb(233, 233, 233); border-right: 1px solid rgb(233, 233, 233); border-top: 1px solid rgb(233, 233, 233); border-bottom: 1px solid rgb(233, 233, 233); border-radius: 4px; padding: 6px 45px 4px 13px; line-height: 17.234px; min-height: 18px; white-space: nowrap; color: rgb(0, 0, 0); font-family: Menlo, Monaco, Consolas, "Courier New", monospace; font-size: 14px;  }
+.S10 { margin: 10px 0px 20px; padding-left: 0px; font-family: Helvetica, Arial, sans-serif; font-size: 14px;  }
+.S11 { margin-left: 56px; line-height: 21px; min-height: 0px; text-align: left; white-space: pre-wrap;  }</style></head><body><div class = rtcContent><h1  class = 'S0'><span>Recommended processing pipeline: a step-by-step walkthrough</span></h1><div  class = 'S1'><span></span></div><div  class = 'S1'><span>This document explains and provides the instructions for how to use the recommended  pipeline for processing surface facial EMG data to detect subtle emotional expressions. This pipeline uses the data from Vacaru and colleagues' study (2021; Rutkowska et al., 2023) in BIDS format (Gorgolewski et al., 2016). The experiment involved 100 participants observing happy and sad facial displays whilst monitoring the activity of their </span><span style=' font-style: italic;'>zygomaticus major</span><span> (</span><span style=' font-style: italic;'>ZM</span><span>) and </span><span style=' font-style: italic;'>corrugator supercilli</span><span> (</span><span style=' font-style: italic;'>CS</span><span>) muscles to assess their facial mimicry. Facial mimicry is the mirroring of another person's facial expressions, although it is often smaller in magnitude than the mimicked expression. This pipeline processes the EMG data in an optimal way for increasing the sensitivity of the further analysis detecting sad and happy subtle emotional expressions from the activity of </span><span style=' font-style: italic;'>ZM</span><span> and </span><span style=' font-style: italic;'>CS</span><span> muscles, and their interaction. It is implemented using Fieldtrip (Oostenveld et al., 2011), open-source toolbox for MATLAB. </span></div><div  class = 'S1'><span>This walkthrough also includes the preparation of data for processing and pre-processing. In data preparation, data-related paths are set and the event markers are mapped to the start of the presentation of emotional expressions on the screen (the start of the trial). In pre-processing, the  two EMG channels from each muscle are re-referenced to each other. This is due to a special characteristic of the data we use, where the bipolar set up of the electrodes was recorded as unipolar using Brain Vision Recorder (Brain Products GmbH). The re-referencing leads to the data having one channel for each muscle, </span><span style=' font-style: italic;'>ZM</span><span> and </span><span style=' font-style: italic;'>CS</span><span>. Then, the loop for each subject is created. For each subject, the data is read in, filtered with a 20-500 Hz bandpass filter, and full-wave rectified. The artifacts are identified, the data is segmented into trials using the events, and the trials containing artifacts are rejected and removed from further processing. The pre-processed data is then ready for further processing. </span></div><div  class = 'S1'><span>This pipeline uses the pre-processed, but not averaged, data from each trial for all the processing steps. It first extracts mean absolute value (MAV) as the feature of interest, and then implements baseline correction by dividing the activity from each trial by the activity during the baseline period. Next, the data is standardised within muscles and within subjects by z-scoring accordingly. Finally, the data is averaged across trials, which makes it ready for statistical analysis. The pipeline is provided as a separate script in the same repository as the data (Rutkowska et al., 2023) and in our github repository: XXX. </span></div><h2  class = 'S2'><span>Preparation</span></h2><div  class = 'S1'><span>Before pre-processing, the data needs to be prepared in Fieldtrip. This entails setting the data-related paths, mapping the events in the data to the emotions they represent, and, in our case, re-referencing the channel because the electrodes were set up in a bipolar way, but the recording was done in a unipolar set up. </span></div><h3  class = 'S3'><span>Setting data-related paths</span></h3><div  class = 'S1'><span>In this section, we define the input and output paths for the data. The input path (bidsdir) is where the raw data is stored, while the output path (outputdir) is where the pipeline's processed output will be saved. This needs to be adjusted to user's own respective paths.</span></div><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S4'><span style="white-space: pre"><span >bidsdir   = </span><span style="color: rgb(204, 147, 147);">'C:\Users\krav\Desktop\BabyBrain\Projects\EMG\Data\Bids'</span><span >; </span><span style="color: rgb(127, 159, 127);">% path of the data</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >outputdir = </span><span style="color: rgb(204, 147, 147);">'C:\Users\krav\Desktop\BabyBrain\Projects\EMG\Data\Processing'</span><span >; </span><span style="color: rgb(127, 159, 127);">% path where to save the output of the pipeline</span></span></div></div></div><h3  class = 'S3'><span>Mapping the events</span></h3><div  class = 'S1'><span>Here, we create a mapping between the response events and the emotions they represent (happy, neutral, and sad). This mapping will be used later in the pipeline to extract and analyze the corresponding EMG data. Each event signifies the start of the presentation of facial expressions to participants, and the start of the trial. </span></div><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S4'><span style="white-space: pre"><span style="color: rgb(127, 159, 127);">% Mapping events to emotions</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >response = [</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >     3     9</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    12    18</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    21    27</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    30    36</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    39    45</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    48    54</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    57    63</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    66    72</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    75    81</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    84    90</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    93    99</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >   102   108</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >   111   117</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >   120   126</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >   129   135</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >   138   144</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >   147   153</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >   156   162</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >   165   171];</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >happy   = response(:,1);</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >sad     = response(:,2);</span></span></div></div></div><h4  class = 'S7'><span></span></h4><h3  class = 'S3'><span>Re-referencing the channels </span></h3><div  class = 'S1'><span>The EMG data was recorded with a unipolar configuration, whilst the set up was bipolar, so there were two electrodes on each muscle site. In this section, we re-reference </span><span style=' font-style: italic;'>ZM</span><span> and </span><span style=' font-style: italic;'>CS</span><span> channels to each other, resulting in a bipolar channel configuration. This creates one channel per muscle. </span></div><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S4'><span style="white-space: pre"><span style="color: rgb(127, 159, 127);">% this is to combine two channels with a common reference into a singel bipolar channel</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span style="color: rgb(127, 159, 127);">% this is done for corr and zyg</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >montage = [];</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >montage.labelold = {</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >  </span><span style="color: rgb(204, 147, 147);">'corr1'</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >  </span><span style="color: rgb(204, 147, 147);">'corr2'</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >  </span><span style="color: rgb(204, 147, 147);">'zyg1'</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >  </span><span style="color: rgb(204, 147, 147);">'zyg2'</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >  };    </span><span style="color: rgb(127, 159, 127);">% old labels</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >montage.labelnew = {  </span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >  </span><span style="color: rgb(204, 147, 147);">'corr'</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >  </span><span style="color: rgb(204, 147, 147);">'zyg'</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >  };    </span><span style="color: rgb(127, 159, 127);">% new labels</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >montage.tra = [</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >  1 -1 0 0</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >  0 0 1 -1</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >  ];    </span><span style="color: rgb(127, 159, 127);">% channel matrix</span></span></div></div></div><div  class = 'S8'><span></span></div><h2  class = 'S2'><span>Pre-processing</span></h2><div  class = 'S1'><span>We want to process data from multiple subjects, so we initiate a for-loop to iterate through each subject. We also create an empty table called 'FinalData' to store the processed data for each subject as the loop progresses.</span></div><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S4'><span style="white-space: pre"><span >FinalData = table()</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span style="color: rgb(240, 223, 175);">for </span><span >subjindx = 1:100 </span><span style="color: rgb(127, 159, 127);">% for each subject from number 1 to 100   </span></span></div></div></div><h3  class = 'S3'><span>Reading in and filtering</span></h3><div  class = 'S1'><span>For each subject we will start by identifying the data and reading it. The ft_preprocessing function preprocesses the data as it is read. The data is filtered using a two-pass bandpass filter between 20 and 500 Hz, order 4.</span></div><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S4'><span style="white-space: pre"><span >    dataset = sprintf(</span><span style="color: rgb(204, 147, 147);">'%s/sub-P%04d/beh/sub-P%04d_task-observation_emg.vhdr'</span><span >, bidsdir, subjindx, subjindx);</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span style="color: rgb(127, 159, 127);">    %% Reading and filtering data</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    cfg = [];</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    cfg.bpfilter  = </span><span style="color: rgb(204, 147, 147);">'yes'</span><span >;</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    cfg.bpfreq    = [20 500]; </span><span style="color: rgb(127, 159, 127);">% bandpass filter between 20 and 500</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    cfg.bpfiltord = 4;</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    cfg.bpfiltdir = </span><span style="color: rgb(204, 147, 147);">'twopass'</span><span >;</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    cfg.dataset   = dataset;</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    cfg.montage   = montage; </span><span style="color: rgb(127, 159, 127);">% this was set in the previous section</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    data = ft_preprocessing(cfg);</span></span></div></div></div><h3  class = 'S3'><span>Rectifying the data</span></h3><div  class = 'S1'><span>The data is full-wave rectified, a process where the negative values are converted to positive ones. In this case, we use the absolute values in the signal. </span></div><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S9'><span style="white-space: pre"><span >    data.trial{:} =  abs(data.trial{:}); </span><span style="color: rgb(127, 159, 127);">% Rectification of signal</span></span></div></div></div><h3  class = 'S3'><span>Reading in the events</span></h3><div  class = 'S1'><span>In this part, we read in the events from the data. The events from the BrainVision system have a letter prefix, which we do not need, so we remove it to only keep the event number. We then filter out any events that don't correspond to the emotions of interest (happy or sad).</span></div><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S4'><span style="white-space: pre"><span >    </span><span style="color: rgb(127, 159, 127);">% read events from data</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    event = ft_read_event(dataset, </span><span style="color: rgb(204, 147, 147);">'type'</span><span >, </span><span style="color: rgb(204, 147, 147);">'Response'</span><span >, </span><span style="color: rgb(204, 147, 147);">'readbids'</span><span >, false);</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span><span style="color: rgb(127, 159, 127);">% removing letter from event value</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span><span style="color: rgb(240, 223, 175);">for </span><span >i=1:numel(event)</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >        event(i).value = str2double(event(i).value(2:end));</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span><span style="color: rgb(240, 223, 175);">end</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span><span style="color: rgb(127, 159, 127);">% removing unnecessarey events</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    event(~ismember([event.value], response)) = []; </span></span></div></div></div><h3  class = 'S3'><span>Identify artifacts</span></h3><div  class = 'S1'><span>In this section, we identify artifacts present in the data by performing the following steps:</span></div><ul  class = 'S10'><li  class = 'S11'><span>Segmenting the continuous data into 1-second segments with no overlap.</span></li><li  class = 'S11'><span>Detecting artifacts by checking if the mean of each 1s segment is more than three standard deviations away from the mean of the overall channel. This is done independently for each channel.</span></li></ul><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S4'><span style="white-space: pre"><span >    </span><span style="color: rgb(127, 159, 127);">% Segmenting continuos data in 1s segments data with no overlap </span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    cfg = [];</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    cfg.length  = 1;</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    cfg.overlap = 0;</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    data_seg    = ft_redefinetrial(cfg, data);</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span><span style="color: rgb(127, 159, 127);">% Mean and standard deviation rejection</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    Me = mean(data.trial{:},2);     </span><span style="color: rgb(127, 159, 127);">% mean for each channel</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    Sd = std(data.trial{:},0,2);    </span><span style="color: rgb(127, 159, 127);">% std for each channel</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    M_seg       = cell2mat(cellfun(@(x) mean(x, 2), data_seg.trial,</span><span style="color: rgb(204, 147, 147);">'UniformOutput'</span><span >, false));  </span><span style="color: rgb(127, 159, 127);">% mean of each trial</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    Rejection   = abs(M_seg(1,:)) &gt; (Me(1)+3*Sd(1)) | abs(M_seg(2,:)) &gt; (Me(2)+3*Sd(2));  </span><span style="color: rgb(127, 159, 127);">% check if the mean is higher </span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span><span style="color: rgb(127, 159, 127);">% than 3sd</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    Artifacts   = data_seg.sampleinfo(find(Rejection),:); </span><span style="color: rgb(127, 159, 127);">% specific trials containing artifacts</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span><span style="color: rgb(127, 159, 127);">% Print details</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    Rej_N   = length(Rejection(Rejection == 1));</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    Total_N = length(Rejection);</span></span></div></div></div><h3  class = 'S3'><span>Segment into trials </span></h3><div  class = 'S1'><span>In this part, we segment the data into trials using the event triggers that signal the presentation of the facial expressions and the start of each trial. </span></div><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S4'><span style="white-space: pre"><span style="color: rgb(127, 159, 127);">    %% Segment and clean data</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span><span style="color: rgb(127, 159, 127);">% Triggers selections</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    numericvalue    = [happy, sad];</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    stringvalue     = cell(size(numericvalue));</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span><span style="color: rgb(240, 223, 175);">for </span><span >i=1:numel(numericvalue)</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >        stringvalue{i} = sprintf(</span><span style="color: rgb(204, 147, 147);">'R%3d'</span><span >, numericvalue(i));</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span><span style="color: rgb(240, 223, 175);">end</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span><span style="color: rgb(127, 159, 127);">% Segment into trials</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    cfg = [];</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    cfg.dataset             = dataset;</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    cfg.trialdef.prestim    = 0.5;</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    cfg.trialdef.poststim   = 2;</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    cfg.trialdef.eventtype  = </span><span style="color: rgb(204, 147, 147);">'Response'</span><span >;</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    cfg.trialdef.eventvalue = stringvalue;</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    cfg         = ft_definetrial(cfg);</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    data_trl    = ft_redefinetrial(cfg, data);</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    </span></span></div></div></div><h3  class = 'S3'><span>Remove artifacts </span></h3><div  class = 'S1'><span>We reject any trials containing artifacts we previously identified, resulting in clean EMG data for further analysis.</span></div><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S4'><span style="white-space: pre"><span >    </span><span style="color: rgb(127, 159, 127);">% Remove artifacts</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    cfg = [];</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    cfg.artfctdef.summary.artifact = Artifacts;</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    cfg.artfctdef.reject = </span><span style="color: rgb(204, 147, 147);">'complete'</span><span >;</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    data_trl_clean = ft_rejectartifact(cfg, data_trl);</span></span></div></div></div><h2  class = 'S2'><span></span></h2><h2  class = 'S2'><span>Processing</span></h2><h3  class = 'S3'><span>MAV and baseline extraction </span></h3><div  class = 'S1'><span>In this section, we extract the mean absolute value (MAV) of each trial and the MAV of the corresponding baseline. </span></div><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S4'><span style="white-space: pre"><span >    </span><span style="color: rgb(127, 159, 127);">% Select baseline and data for each segment</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span><span style="color: rgb(240, 223, 175);">for </span><span >i=1:numel(data_trl_clean.trial)</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >        begsample = nearest(data_trl_clean.time{i}, 0);   </span><span style="color: rgb(127, 159, 127);">% find sample closest to 0</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >        endsample = nearest(data_trl_clean.time{i}, inf); </span><span style="color: rgb(127, 159, 127);">% find last sample (closest to inf)</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >        </span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >        baseline_corr(i)  = mean(data_trl_clean.trial{i}(1,1:begsample-1));       </span><span style="color: rgb(127, 159, 127);">% mav of the baseline for the corrugator</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >        baseline_zyg(i)   = mean(data_trl_clean.trial{i}(2,1:begsample-1));       </span><span style="color: rgb(127, 159, 127);">% mav of the baseline for the zygomaticus</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >        active_corr(i)    = mean(data_trl_clean.trial{i}(1,begsample:endsample)); </span><span style="color: rgb(127, 159, 127);">% mav of the segment for the corrugator</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >        active_zyg(i)     = mean(data_trl_clean.trial{i}(2,begsample:endsample)); </span><span style="color: rgb(127, 159, 127);">% mav of the segment for the zygomaticus</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span><span style="color: rgb(240, 223, 175);">end</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    </span></span></div></div></div><h3  class = 'S3'><span>Baseline correction</span></h3><div  class = 'S1'><span>We normalise the data to the basline by dividing the MAV of each trial by the MAV of its respective baseline.</span></div><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S4'><span style="white-space: pre"><span >    </span><span style="color: rgb(127, 159, 127);">% Divide by baseline</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    Corr = (active_corr./baseline_corr)';</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    Zyg  = (active_zyg./baseline_zyg)';</span></span></div></div></div><h3  class = 'S3'><span>Trial division into conditions</span></h3><div  class = 'S1'><span>We extract the condition of each trial based on the event triggers. </span></div><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S4'><span style="white-space: pre"><span >    </span><span style="color: rgb(127, 159, 127);">% map the trials onto condition codes</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    Condition = nan(size(data_trl_clean.trialinfo));</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    Condition(ismember(data_trl_clean.trialinfo, happy))    = 1;</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    Condition(ismember(data_trl_clean.trialinfo, sad))      = 2;   </span></span></div></div></div><h3  class = 'S3'><span>Integrating the data into a table</span></h3><div  class = 'S1'><span>Here we put all the data from one subject into a table for standardisation. </span></div><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S4'><span style="white-space: pre"><span >    </span><span style="color: rgb(127, 159, 127);">% Integrate all in a table</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    Subject = repmat(subjindx,length(Condition),1);</span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    MAV_corrected = table(Subject, Condition, Corr,Zyg)</span></span></div></div></div><h3  class = 'S3'><span>Standardisation within muscle</span></h3><div  class = 'S1'><span>The data is standardised within muscle using z-scoring. </span></div><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S4'><span style="white-space: pre"><span >    Standardization_WMuscle = zscore(MAV_corrected{:,3:4},0,1);         </span><span style="color: rgb(127, 159, 127);">% standardisation of the data by zscoring </span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    </span><span style="color: rgb(127, 159, 127);">% within muscle</span></span></div></div></div><h3  class = 'S3'><span>Standardisation within subject</span></h3><div  class = 'S1'><span>The data is first standardised within subject by using z-scoring, then saved into the table. </span></div><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S4'><span style="white-space: pre"><span >    Standardization_WSubject = zscore(Standardization_WMuscle,0,</span><span style="color: rgb(204, 147, 147);">'all'</span><span >); </span><span style="color: rgb(127, 159, 127);">% standardisation of the data by zscoring </span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span><span style="color: rgb(127, 159, 127);">% within subject</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span >    MAV_corrected{:,3:4} = Standardization_WSubject;    </span><span style="color: rgb(127, 159, 127);">% replacing data into the table</span></span></div></div></div><h3  class = 'S3'><span>Appending the data </span></h3><div  class = 'S1'><span>In this section, we append the data extracted for each specific subject to the general table called 'FinalData', which we created at the beginning of the pipeline. This process enables us to save the processed data from all subjects into a single table.</span></div><div  class = 'S1'><span>Before appending the data, we first calculate the average value for each condition (happy and sad) by finding the grouping between conditions using findgroups.</span></div><div  class = 'S1'><span>Additionally, to keep the script clean and efficient, we clear some variables that are no longer needed in the subsequent iterations of the loop or the rest of the script.</span></div><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S4'><span style="white-space: pre"><span >    </span><span style="color: rgb(127, 159, 127);">% Extracting the average for each condition </span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    [Grouping , Group_table]  = findgroups(MAV_corrected(:,1:2));     </span><span style="color: rgb(127, 159, 127);">% finding the grouping between subjects and </span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span><span style="color: rgb(127, 159, 127);">% conditions</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    Group_Values = splitapply(@mean, [MAV_corrected.Corr, MAV_corrected.Zyg], Grouping);     </span><span style="color: rgb(127, 159, 127);">% extract average for each </span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span><span style="color: rgb(127, 159, 127);">% group</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    Group_table.Corr = Group_Values(:,1);      </span><span style="color: rgb(127, 159, 127);">% append averaged corrugator to the table</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    Group_table.Zyg  = Group_Values(:,2);      </span><span style="color: rgb(127, 159, 127);">% append averaged zygomativus to the table</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span><span style="color: rgb(127, 159, 127);">% Append the adata</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    FinalData = [FinalData; MAV_corrected ]; </span><span style="color: rgb(127, 159, 127);">% appending the data to the final table</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    clearvars </span><span style="color: rgb(204, 147, 147);">-except FinalData montage response sad happy *dir *Group</span><span >   </span><span style="color: rgb(127, 159, 127);">% clearing some variables</span></span></div></div><div class="inlineWrapper"><div  class = 'S6'><span style="white-space: pre"><span >    </span></span></div></div><div class="inlineWrapper"><div  class = 'S5'><span style="white-space: pre"><span style="color: rgb(240, 223, 175);">end</span></span></div></div></div><h3  class = 'S3'><span>Save the data</span></h3><div  class = 'S1'><span>After completing the processing of the EMG data for all subjects, we can now save our processed data to a CSV file. The  'writetable' function is used to write the contents of the 'FinalData'  table to a file named 'ProcessedData.csv' in the specified output directory. This will allow for easy access and statistical analysis of the data.</span></div><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S9'><span style="white-space: pre"><span >writetable(FinalData, fullfile(outputdir,</span><span style="color: rgb(204, 147, 147);">'ProcessedData.csv'</span><span >))</span></span></div></div></div><div  class = 'S8'><span></span></div><h2  class = 'S2'><span>References</span></h2><div  class = 'S1'><span>Gorgolewski, K.J., Auer, T., Calhoun, V.D., Craddock, R.C., Das, S., Duff, E.P., Flandin, G., Ghosh, S.S., Glatard, T., Halchenko, Y.O., Handwerker, D.A., Hanke, M., Keator, D., Li, X., Michael, Z., Maumet, C., Nichols, B.N., Nichols, T.E., Pellman, J.,          Poline, J.-B., Rokem, A., Schaefer, G., Sochat, V., Triplett, W., Turner, J.A., Varoquaux, G., Poldrack, R.A. (2016).</span><span> The brain imaging data structure, a format for organizing and describing outputs of neuroimaging experiments. </span><span style=' font-style: italic;'>Scientific Data, 3</span><span> (160044).</span><span> </span><a href = "https://doi.org/10.1038/sdata.2016.44."><span>https://doi.org/10.1038/sdata.2016.44.</span></a></div><div  class = 'S1'><span>Oostenveld, R., Fries, P., Maris, E., &amp; Schoffelen, J.-M. (2010). FieldTrip: Open Source Software for Advanced Analysis of MEG, EEG, and Invasive Electrophysiological Data. </span><span style=' font-style: italic;'>Computational Intelligence and Neuroscience</span><span>, </span><span style=' font-style: italic;'>2011</span><span>, e156869.</span><a href = "https://doi.org/10.1155/2011/156869"><span> </span><span style=' text-decoration: underline;'>https://doi.org/10.1155/2011/156869</span></a></div><div  class = 'S1'><span>Rutkowska, J.M., Ghilardi, T., Vacaru, S.V., van Schaik J.E., Meyer M., Hunnius, S., &amp; Oostenveld, R. (2023). Optimising the processing of surface facial EMG to detect emotional expressions: recommended pipeline. Version 1. Radboud University. (dataset). https://doi.org/XXXXXXXX</span></div><div  class = 'S1'><span>Vacaru, S. V., van Schaik, J. E., Spiess, L., &amp; Hunnius, S. (2021). No evidence for modulation of facial mimicry by attachment tendencies in adulthood: An EMG investigation. </span><span style=' font-style: italic;'>The Journal of Social Psychology</span><span>, 1–15.</span><a href = "https://doi.org/10.1080/00224545.2021.1973946"><span> https://doi.org/10.1080/00224545.2021.1973946</span></a></div>
+<br>
+<!-- 
+##### SOURCE BEGIN #####
+%% Recommended processing pipeline: a step-by-step walkthrough
+% 
+% 
+% This document explains and provides the instructions for how to use the recommended  
+% pipeline for processing surface facial EMG data to detect subtle emotional expressions. 
+% This pipeline uses the data from Vacaru and colleagues' study (2021; Rutkowska 
+% et al., 2023) in BIDS format (Gorgolewski et al., 2016). The experiment involved 
+% 100 participants observing happy and sad facial displays whilst monitoring the 
+% activity of their _zygomaticus major_ (_ZM_) and _corrugator supercilli_ (_CS_) 
+% muscles to assess their facial mimicry. Facial mimicry is the mirroring of another 
+% person's facial expressions, although it is often smaller in magnitude than 
+% the mimicked expression. This pipeline processes the EMG data in an optimal 
+% way for increasing the sensitivity of the further analysis detecting sad and 
+% happy subtle emotional expressions from the activity of _ZM_ and _CS_ muscles, 
+% and their interaction. It is implemented using Fieldtrip (Oostenveld et al., 
+% 2011), open-source toolbox for MATLAB. 
+% 
+% This walkthrough also includes the preparation of data for processing and 
+% pre-processing. In data preparation, data-related paths are set and the event 
+% markers are mapped to the start of the presentation of emotional expressions 
+% on the screen (the start of the trial). In pre-processing, the  two EMG channels 
+% from each muscle are re-referenced to each other. This is due to a special characteristic 
+% of the data we use, where the bipolar set up of the electrodes was recorded 
+% as unipolar using Brain Vision Recorder (Brain Products GmbH). The re-referencing 
+% leads to the data having one channel for each muscle, _ZM_ and _CS_. Then, the 
+% loop for each subject is created. For each subject, the data is read in, filtered 
+% with a 20-500 Hz bandpass filter, and full-wave rectified. The artifacts are 
+% identified, the data is segmented into trials using the events, and the trials 
+% containing artifacts are rejected and removed from further processing. The pre-processed 
+% data is then ready for further processing. 
+% 
+% This pipeline uses the pre-processed, but not averaged, data from each trial 
+% for all the processing steps. It first extracts mean absolute value (MAV) as 
+% the feature of interest, and then implements baseline correction by dividing 
+% the activity from each trial by the activity during the baseline period. Next, 
+% the data is standardised within muscles and within subjects by z-scoring accordingly. 
+% Finally, the data is averaged across trials, which makes it ready for statistical 
+% analysis. The pipeline is provided as a separate script in the same repository 
+% as the data (Rutkowska et al., 2023) and in our github repository: XXX. 
+%% Preparation
+% Before pre-processing, the data needs to be prepared in Fieldtrip. This entails 
+% setting the data-related paths, mapping the events in the data to the emotions 
+% they represent, and, in our case, re-referencing the channel because the electrodes 
+% were set up in a bipolar way, but the recording was done in a unipolar set up. 
+% Setting data-related paths
+% In this section, we define the input and output paths for the data. The input 
+% path (bidsdir) is where the raw data is stored, while the output path (outputdir) 
+% is where the pipeline's processed output will be saved. This needs to be adjusted 
+% to user's own respective paths.
+
+bidsdir   = 'C:\Users\krav\Desktop\BabyBrain\Projects\EMG\Data\Bids'; % path of the data
+outputdir = 'C:\Users\krav\Desktop\BabyBrain\Projects\EMG\Data\Processing'; % path where to save the output of the pipeline
+% Mapping the events
+% Here, we create a mapping between the response events and the emotions they 
+% represent (happy, neutral, and sad). This mapping will be used later in the 
+% pipeline to extract and analyze the corresponding EMG data. Each event signifies 
+% the start of the presentation of facial expressions to participants, and the 
+% start of the trial. 
+
+% Mapping events to emotions
+response = [
+     3     9
+    12    18
+    21    27
+    30    36
+    39    45
+    48    54
+    57    63
+    66    72
+    75    81
+    84    90
+    93    99
+   102   108
+   111   117
+   120   126
+   129   135
+   138   144
+   147   153
+   156   162
+   165   171];
+
+happy   = response(:,1);
+sad     = response(:,2);
+% 
+% Re-referencing the channels 
+% The EMG data was recorded with a unipolar configuration, whilst the set up 
+% was bipolar, so there were two electrodes on each muscle site. In this section, 
+% we re-reference _ZM_ and _CS_ channels to each other, resulting in a bipolar 
+% channel configuration. This creates one channel per muscle. 
+
+% this is to combine two channels with a common reference into a singel bipolar channel
+% this is done for corr and zyg
+
+montage = [];
+montage.labelold = {
+  'corr1'
+  'corr2'
+  'zyg1'
+  'zyg2'
+  };    % old labels
+
+montage.labelnew = {  
+  'corr'
+  'zyg'
+  };    % new labels
+
+montage.tra = [
+  1 -1 0 0
+  0 0 1 -1
+  ];    % channel matrix
+%% 
+% 
+%% Pre-processing
+% We want to process data from multiple subjects, so we initiate a for-loop 
+% to iterate through each subject. We also create an empty table called 'FinalData' 
+% to store the processed data for each subject as the loop progresses.
+
+FinalData = table()
+
+for subjindx = 1:100 % for each subject from number 1 to 100   
+% Reading in and filtering
+% For each subject we will start by identifying the data and reading it. The 
+% ft_preprocessing function preprocesses the data as it is read. The data is filtered 
+% using a two-pass bandpass filter between 20 and 500 Hz, order 4.
+
+    dataset = sprintf('%s/sub-P%04d/beh/sub-P%04d_task-observation_emg.vhdr', bidsdir, subjindx, subjindx);
+
+    %% Reading and filtering data
+    cfg = [];
+    cfg.bpfilter  = 'yes';
+    cfg.bpfreq    = [20 500]; % bandpass filter between 20 and 500
+    cfg.bpfiltord = 4;
+    cfg.bpfiltdir = 'twopass';
+    cfg.dataset   = dataset;
+    cfg.montage   = montage; % this was set in the previous section
+    data = ft_preprocessing(cfg);
+% Rectifying the data
+% The data is full-wave rectified, a process where the negative values are converted 
+% to positive ones. In this case, we use the absolute values in the signal. 
+
+    data.trial{:} =  abs(data.trial{:}); % Rectification of signal
+% Reading in the events
+% In this part, we read in the events from the data. The events from the BrainVision 
+% system have a letter prefix, which we do not need, so we remove it to only keep 
+% the event number. We then filter out any events that don't correspond to the 
+% emotions of interest (happy or sad).
+
+    % read events from data
+    event = ft_read_event(dataset, 'type', 'Response', 'readbids', false);
+
+    % removing letter from event value
+    for i=1:numel(event)
+        event(i).value = str2double(event(i).value(2:end));
+    end
+    
+    % removing unnecessarey events
+    event(~ismember([event.value], response)) = []; 
+% Identify artifacts
+% In this section, we identify artifacts present in the data by performing the 
+% following steps:
+%% 
+% * Segmenting the continuous data into 1-second segments with no overlap.
+% * Detecting artifacts by checking if the mean of each 1s segment is more than 
+% three standard deviations away from the mean of the overall channel. This is 
+% done independently for each channel.
+
+    % Segmenting continuos data in 1s segments data with no overlap 
+    cfg = [];
+    cfg.length  = 1;
+    cfg.overlap = 0;
+    data_seg    = ft_redefinetrial(cfg, data);
+
+    % Mean and standard deviation rejection
+    Me = mean(data.trial{:},2);     % mean for each channel
+    Sd = std(data.trial{:},0,2);    % std for each channel
+
+    M_seg       = cell2mat(cellfun(@(x) mean(x, 2), data_seg.trial,'UniformOutput', false));  % mean of each trial
+    Rejection   = abs(M_seg(1,:)) > (Me(1)+3*Sd(1)) | abs(M_seg(2,:)) > (Me(2)+3*Sd(2));  % check if the mean is higher 
+    % than 3sd
+    Artifacts   = data_seg.sampleinfo(find(Rejection),:); % specific trials containing artifacts
+
+    % Print details
+    Rej_N   = length(Rejection(Rejection == 1));
+    Total_N = length(Rejection);
+% Segment into trials 
+% In this part, we segment the data into trials using the event triggers that 
+% signal the presentation of the facial expressions and the start of each trial. 
+
+    %% Segment and clean data
+
+    % Triggers selections
+    numericvalue    = [happy, sad];
+    stringvalue     = cell(size(numericvalue));
+    for i=1:numel(numericvalue)
+        stringvalue{i} = sprintf('R%3d', numericvalue(i));
+    end
+
+    % Segment into trials
+    cfg = [];
+    cfg.dataset             = dataset;
+    cfg.trialdef.prestim    = 0.5;
+    cfg.trialdef.poststim   = 2;
+    cfg.trialdef.eventtype  = 'Response';
+    cfg.trialdef.eventvalue = stringvalue;
+    
+    cfg         = ft_definetrial(cfg);
+    data_trl    = ft_redefinetrial(cfg, data);
+    
+% Remove artifacts 
+% We reject any trials containing artifacts we previously identified, resulting 
+% in clean EMG data for further analysis.
+
+    % Remove artifacts
+    cfg = [];
+    cfg.artfctdef.summary.artifact = Artifacts;
+    cfg.artfctdef.reject = 'complete';
+    data_trl_clean = ft_rejectartifact(cfg, data_trl);
+%% 
+%% Processing
+% MAV and baseline extraction 
+% In this section, we extract the mean absolute value (MAV) of each trial and 
+% the MAV of the corresponding baseline. 
+
+    % Select baseline and data for each segment
+    for i=1:numel(data_trl_clean.trial)
+        begsample = nearest(data_trl_clean.time{i}, 0);   % find sample closest to 0
+        endsample = nearest(data_trl_clean.time{i}, inf); % find last sample (closest to inf)
+        
+        baseline_corr(i)  = mean(data_trl_clean.trial{i}(1,1:begsample-1));       % mav of the baseline for the corrugator
+        baseline_zyg(i)   = mean(data_trl_clean.trial{i}(2,1:begsample-1));       % mav of the baseline for the zygomaticus
+        active_corr(i)    = mean(data_trl_clean.trial{i}(1,begsample:endsample)); % mav of the segment for the corrugator
+        active_zyg(i)     = mean(data_trl_clean.trial{i}(2,begsample:endsample)); % mav of the segment for the zygomaticus
+    end
+    
+% Baseline correction
+% We normalise the data to the basline by dividing the MAV of each trial by 
+% the MAV of its respective baseline.
+
+    % Divide by baseline
+    Corr = (active_corr./baseline_corr)';
+    Zyg  = (active_zyg./baseline_zyg)';
+% Trial division into conditions
+% We extract the condition of each trial based on the event triggers. 
+
+    % map the trials onto condition codes
+    Condition = nan(size(data_trl_clean.trialinfo));
+    Condition(ismember(data_trl_clean.trialinfo, happy))    = 1;
+    Condition(ismember(data_trl_clean.trialinfo, sad))      = 2;   
+% Integrating the data into a table
+% Here we put all the data from one subject into a table for standardisation. 
+
+    % Integrate all in a table
+    Subject = repmat(subjindx,length(Condition),1);
+    MAV_corrected = table(Subject, Condition, Corr,Zyg)
+% Standardisation within muscle
+% The data is standardised within muscle using z-scoring. 
+
+    Standardization_WMuscle = zscore(MAV_corrected{:,3:4},0,1);         % standardisation of the data by zscoring 
+    % within muscle
+% Standardisation within subject
+% The data is first standardised within subject by using z-scoring, then saved 
+% into the table. 
+
+    Standardization_WSubject = zscore(Standardization_WMuscle,0,'all'); % standardisation of the data by zscoring 
+    % within subject
+
+    MAV_corrected{:,3:4} = Standardization_WSubject;    % replacing data into the table
+% Appending the data 
+% In this section, we append the data extracted for each specific subject to 
+% the general table called 'FinalData', which we created at the beginning of the 
+% pipeline. This process enables us to save the processed data from all subjects 
+% into a single table.
+% 
+% Before appending the data, we first calculate the average value for each condition 
+% (happy and sad) by finding the grouping between conditions using findgroups.
+% 
+% Additionally, to keep the script clean and efficient, we clear some variables 
+% that are no longer needed in the subsequent iterations of the loop or the rest 
+% of the script.
+
+    % Extracting the average for each condition 
+    [Grouping , Group_table]  = findgroups(MAV_corrected(:,1:2));     % finding the grouping between subjects and 
+    % conditions
+    Group_Values = splitapply(@mean, [MAV_corrected.Corr, MAV_corrected.Zyg], Grouping);     % extract average for each 
+    % group
+    
+    Group_table.Corr = Group_Values(:,1);      % append averaged corrugator to the table
+    Group_table.Zyg  = Group_Values(:,2);      % append averaged zygomativus to the table
+    
+    
+    % Append the adata
+    FinalData = [FinalData; MAV_corrected ]; % appending the data to the final table
+    
+    clearvars -except FinalData montage response sad happy *dir *Group   % clearing some variables
+    
+end
+% Save the data
+% After completing the processing of the EMG data for all subjects, we can now 
+% save our processed data to a CSV file. The  'writetable' function is used to 
+% write the contents of the 'FinalData'  table to a file named 'ProcessedData.csv' 
+% in the specified output directory. This will allow for easy access and statistical 
+% analysis of the data.
+
+writetable(FinalData, fullfile(outputdir,'ProcessedData.csv'))
+%% 
+% 
+%% References
+% Gorgolewski, K.J., Auer, T., Calhoun, V.D., Craddock, R.C., Das, S., Duff, 
+% E.P., Flandin, G., Ghosh, S.S., Glatard, T., Halchenko, Y.O., Handwerker, D.A., 
+% Hanke, M., Keator, D., Li, X., Michael, Z., Maumet, C., Nichols, B.N., Nichols, 
+% T.E., Pellman, J.,          Poline, J.-B., Rokem, A., Schaefer, G., Sochat, 
+% V., Triplett, W., Turner, J.A., Varoquaux, G., Poldrack, R.A. (2016). The brain 
+% imaging data structure, a format for organizing and describing outputs of neuroimaging 
+% experiments. _Scientific Data, 3_ (160044). <https://doi.org/10.1038/sdata.2016.44. 
+% https://doi.org/10.1038/sdata.2016.44.>
+% 
+% Oostenveld, R., Fries, P., Maris, E., & Schoffelen, J.-M. (2010). FieldTrip: 
+% Open Source Software for Advanced Analysis of MEG, EEG, and Invasive Electrophysiological 
+% Data. _Computational Intelligence and Neuroscience_, _2011_, e156869.<https://doi.org/10.1155/2011/156869  
+% https://doi.org/10.1155/2011/156869>
+% 
+% Rutkowska, J.M., Ghilardi, T., Vacaru, S.V., van Schaik J.E., Meyer M., Hunnius, 
+% S., & Oostenveld, R. (2023). Optimising the processing of surface facial EMG 
+% to detect emotional expressions: recommended pipeline. Version 1. Radboud University. 
+% (dataset). https://doi.org/XXXXXXXX
+% 
+% Vacaru, S. V., van Schaik, J. E., Spiess, L., & Hunnius, S. (2021). No evidence 
+% for modulation of facial mimicry by attachment tendencies in adulthood: An EMG 
+% investigation. _The Journal of Social Psychology_, 1–15.<https://doi.org/10.1080/00224545.2021.1973946  
+% https://doi.org/10.1080/00224545.2021.1973946>
+##### SOURCE END #####
+-->
+</div></body></html>
