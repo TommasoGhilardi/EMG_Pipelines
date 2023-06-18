@@ -35,6 +35,7 @@
 % Finally, the data is averaged across trials, which makes it ready for statistical 
 % analysis. The pipeline is provided as a separate script in the same repository 
 % as the data (Rutkowska et al., 2023) and in our github repository: XXX. 
+
 %% Preparation
 % Before pre-processing, the data needs to be prepared in Fieldtrip. This entails 
 % setting the data-related paths, mapping the events in the data to the emotions 
@@ -46,8 +47,9 @@
 % is where the pipeline's processed output will be saved. This needs to be adjusted 
 % to user's own respective paths.
 
-bidsdir   = '/Volumes/SamsungT7/data/emg-stefania/bids'; % path of the data
-outputdir = '/Volumes/SamsungT7/data/emg-stefania/result'; % path where to save the output of the pipeline
+bidsdir   = 'C:\Users\krav\Desktop\BabyBrain\Projects\emg\bids'; % path of the data
+outputdir = 'C:\Users\krav\Desktop\BabyBrain\Projects\emg\result'; % path where to save the output of the pipeline
+
 % Mapping the events
 % Here, we create a mapping between the response events and the emotions they 
 % represent (happy, neutral, and sad). This mapping will be used later in the 
@@ -105,15 +107,17 @@ montage.tra = [
   1 -1 0 0
   0 0 1 -1
   ];    % channel matrix
+
 %% Pre-processing
 % We want to process data from multiple subjects, so we initiate a for-loop 
 % to iterate through each subject. We also create an empty table called 'FinalData' 
 % to store the processed data for each subject as the loop progresses.
 
-FinalData = table()
+FinalData = table();
 
 for subjindx = 1:100 % for each subject from number 1 to 100   
-    % Reading in and filtering
+    
+    % Reading in and filering
     % For each subject we will start by identifying the data and reading it. The 
     % ft_preprocessing function preprocesses the data as it is read. The data is filtered 
     % using a two-pass bandpass filter between 20 and 500 Hz, order 4.
@@ -218,19 +222,19 @@ for subjindx = 1:100 % for each subject from number 1 to 100
 
     mkdir(fullfile(outputdir, sprintf('sub-P%04d', subjindx)))
 
-    outputfile = fullfile(outputdir, sprintf('sub-P%04d', subjindx), 'data.mat')
+    outputfile = fullfile(outputdir, sprintf('sub-P%04d', subjindx), 'data.mat');
     save(outputfile, 'data')
-    outputfile = fullfile(outputdir, sprintf('sub-P%04d', subjindx), 'event.mat')
+    outputfile = fullfile(outputdir, sprintf('sub-P%04d', subjindx), 'event.mat');
     save(outputfile, 'event')
-    outputfile = fullfile(outputdir, sprintf('sub-P%04d', subjindx), 'rejection.mat')
+    outputfile = fullfile(outputdir, sprintf('sub-P%04d', subjindx), 'rejection.mat');
     save(outputfile, 'rejection')
-    outputfile = fullfile(outputdir, sprintf('sub-P%04d', subjindx), 'artifacts.mat')
+    outputfile = fullfile(outputdir, sprintf('sub-P%04d', subjindx), 'artifacts.mat');
     save(outputfile, 'artifacts')
-    outputfile = fullfile(outputdir, sprintf('sub-P%04d', subjindx), 'data_seg.mat')
+    outputfile = fullfile(outputdir, sprintf('sub-P%04d', subjindx), 'data_seg.mat');
     save(outputfile, 'data_seg')
-    outputfile = fullfile(outputdir, sprintf('sub-P%04d', subjindx), 'data_trl.mat')
+    outputfile = fullfile(outputdir, sprintf('sub-P%04d', subjindx), 'data_trl.mat');
     save(outputfile, 'data_trl')
-    outputfile = fullfile(outputdir, sprintf('sub-P%04d', subjindx), 'data_trl_clean.mat')
+    outputfile = fullfile(outputdir, sprintf('sub-P%04d', subjindx), 'data_trl_clean.mat');
     save(outputfile, 'data_trl_clean')
 
     %% Processing
