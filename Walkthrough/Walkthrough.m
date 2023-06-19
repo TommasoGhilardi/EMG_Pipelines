@@ -34,7 +34,7 @@
 % the data is standardised within muscles and within subjects by z-scoring accordingly. 
 % Finally, the data is averaged across trials, which makes it ready for statistical 
 % analysis. The pipeline is provided as a separate script in the same repository 
-% as the data (Rutkowska et al., 2023) and in our github repository: XXX. 
+% as the data (Rutkowska et al., 2023) and in our github repository: https://github.com/TommasoGhilardi/EMG_Pipelines 
 
 %% Preparation
 % Before pre-processing, the data needs to be prepared in Fieldtrip. This entails 
@@ -347,7 +347,7 @@ writetable(FinalData, fullfile(outputdir,'ProcessedData.csv'))
 % Rutkowska, J.M., Ghilardi, T., Vacaru, S.V., van Schaik J.E., Meyer M., Hunnius, 
 % S., & Oostenveld, R. (2023). Optimising the processing of surface facial EMG 
 % to detect emotional expressions: recommended pipeline. Version 1. Radboud University. 
-% (dataset). https://doi.org/XXXXXXXX
+% (dataset). https://doi.org/10.34973/ew6p-x929
 % 
 % Vacaru, S. V., van Schaik, J. E., Spiess, L., & Hunnius, S. (2021). No evidence 
 % for modulation of facial mimicry by attachment tendencies in adulthood: An EMG 
