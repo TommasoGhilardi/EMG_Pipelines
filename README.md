@@ -85,3 +85,6 @@
 | A_MAV_0MS     | Average                                       | MAV                                                                           | 0                                                                            | M                                     | S                                       | 0                                         |
 | A_MAV_SMS     | Average                                       | MAV                                                                           | Subtraction                                                                  | M                                     | S                                       | 0                                         |
 | A_MAV_DMS     | Average                                       | MAV                                                                           | Division                                                                     | M                                     | S                                       | 0                                         |
+
+
+This work is licensed under a [Creative Commons Attribution 4.0 International License][cc-by].
