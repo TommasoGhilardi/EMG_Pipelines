@@ -5,7 +5,7 @@
 % Average calcualted on baseline[-0.5 0] and trial[0 1.5]s
 % Values exctracted for corrugator zygomaticus
 
-Data_type = 'Average';
+Data_type = 'Ab';
 Index = 'MAV';
 
 %% Average over repetition
@@ -76,16 +76,16 @@ if isfield( Pipelines.(Data_type), Index)
 else
         
     Pipelines.(Data_type).(Index)(1).data = data_export_not_corrected;
-    Pipelines.(Data_type).(Index)(1).BaselineCorrection = '0';
+    Pipelines.(Data_type).(Index)(1).BaselineCorrection = 'Bn';
 
     Pipelines.(Data_type).(Index)(2).data = d_data_export;
-    Pipelines.(Data_type).(Index)(2).BaselineCorrection = 'D';
+    Pipelines.(Data_type).(Index)(2).BaselineCorrection = 'Bd';
 
     Pipelines.(Data_type).(Index)(3).data = s_data_export;
-    Pipelines.(Data_type).(Index)(3).BaselineCorrection = 'S';
+    Pipelines.(Data_type).(Index)(3).BaselineCorrection = 'Bs';
     
-    [Pipelines.(Data_type).(Index).MuscleStandadization] = deal('0','0','0');
-    [Pipelines.(Data_type).(Index).SubjectStandadization] = deal('0','0','0');
+    [Pipelines.(Data_type).(Index).MuscleStandadization] = deal('Mn','Mn','Mn');
+    [Pipelines.(Data_type).(Index).SubjectStandadization] = deal('Sn','Sn','Sn');
 
 end
 

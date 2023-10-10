@@ -12,17 +12,17 @@ for typeN = 1:2
         
         % z-score within mucle
         out{1}  = Zscoring(copy,1);
-        [out{1}.MuscleStandadization] = deal('M','M','M');
+        [out{1}.MuscleStandadization] = deal('Ms','Ms','Ms');
 
         % z-score within subject
         out{2} = Zscoring(copy,'all');
-        [out{2}.SubjectStandadization] = deal('S','S','S');
+        [out{2}.SubjectStandadization] = deal('Ss','Ss','Ss');
 
         % z-score with muscle and subject
         out{3} = Zscoring(copy,1);
         out{3} = Zscoring(out{3},'all');
-        [out{3}.MuscleStandadization] = deal('M','M','M');
-        [out{3}.SubjectStandadization] = deal('S','S','S');
+        [out{3}.MuscleStandadization] = deal('Ms','Ms','Ms');
+        [out{3}.SubjectStandadization] = deal('Ss','Ss','Ss');
 
         % add to structure
         Pipelines.(data_types{typeN}).(indexes{indexN}) = [Pipelines.(data_types{typeN}).(indexes{indexN}), out{1},out{2},out{3}];
@@ -45,17 +45,17 @@ for typeN = 1:2
         % Save each pipeline
         for pip = 1:length(Pipelines.(data_types{typeN}).(indexes{indexN}))
                         
-            name = [ data_types{typeN}(1),'_',indexes{indexN} ,'_'...
-                Pipelines.(data_types{typeN}).(indexes{indexN})(pip).BaselineCorrection,...
-                Pipelines.(data_types{typeN}).(indexes{indexN})(pip).MuscleStandadization,...
+            name = [ data_types{typeN},'_',indexes{indexN} ,'_'...
+                Pipelines.(data_types{typeN}).(indexes{indexN})(pip).BaselineCorrection,'_'...
+                Pipelines.(data_types{typeN}).(indexes{indexN})(pip).MuscleStandadization,'_'...
                 Pipelines.(data_types{typeN}).(indexes{indexN})(pip).SubjectStandadization,...
                 '.csv'];
             
             % Extract average from pipelins in which the index was
             % calculcate on each trial
-            if data_types{typeN} == "Raw"
+            if data_types{typeN} == "Aa"
                 data_out =  extractAVG(Pipelines.(data_types{typeN}).(indexes{indexN})(pip).data);
-            elseif data_types{typeN} == "Average"
+            elseif data_types{typeN} == "Ab"
                 data_out = Pipelines.(data_types{typeN}).(indexes{indexN})(pip).data;   
             end
             

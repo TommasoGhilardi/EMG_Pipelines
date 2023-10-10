@@ -34,8 +34,8 @@
 % the data is standardised within muscles and within subjects by z-scoring accordingly. 
 % Finally, the data is averaged across trials, which makes it ready for statistical 
 % analysis. The pipeline is provided as a separate script in the same repository 
-% as the data (Rutkowska et al., 2023) and in our github repository: https://github.com/TommasoGhilardi/EMG_Pipelines 
-
+% as the data (Rutkowska et al., 2023) and in our github repository: <https://github.com/TommasoGhilardi/EMG_Pipelines 
+% https://github.com/TommasoGhilardi/EMG_Pipelines>  
 %% Preparation
 % Before pre-processing, the data needs to be prepared in Fieldtrip. This entails 
 % setting the data-related paths, mapping the events in the data to the emotions 
@@ -47,9 +47,8 @@
 % is where the pipeline's processed output will be saved. This needs to be adjusted 
 % to user's own respective paths.
 
-bidsdir   = 'C:\Users\krav\Desktop\BabyBrain\Projects\emg\bids'; % path of the data
-outputdir = 'C:\Users\krav\Desktop\BabyBrain\Projects\emg\result'; % path where to save the output of the pipeline
-
+bidsdir   = 'C:\Users\tomma\Desktop\BabyBrain\Projects\EMG\Data\Bids'; % path of the data
+outputdir = 'C:\Users\tomma\Desktop\BabyBrain\Projects\EMG\Data\Processing'; % path where to save the output of the pipeline
 % Mapping the events
 % Here, we create a mapping between the response events and the emotions they 
 % represent (happy, neutral, and sad). This mapping will be used later in the 
@@ -81,6 +80,7 @@ response = [
 
 happy   = response(:,1);
 sad     = response(:,2);
+% 
 % Re-referencing the channels 
 % The EMG data was recorded with a unipolar configuration, whilst the set up 
 % was bipolar, so there were two electrodes on each muscle site. In this section, 
@@ -107,7 +107,6 @@ montage.tra = [
   1 -1 0 0
   0 0 1 -1
   ];    % channel matrix
-
 %% Pre-processing
 % We want to process data from multiple subjects, so we initiate a for-loop 
 % to iterate through each subject. We also create an empty table called 'FinalData' 
@@ -116,13 +115,12 @@ montage.tra = [
 FinalData = table();
 
 for subjindx = 1:100 % for each subject from number 1 to 100   
-    
-    % Reading in and filering
-    % For each subject we will start by identifying the data and reading it. The 
-    % ft_preprocessing function preprocesses the data as it is read. The data is filtered 
-    % using a two-pass bandpass filter between 20 and 500 Hz, order 4.
+% Reading in and filtering
+% For each subject we will start by identifying the data and reading it. The 
+% ft_preprocessing function preprocesses the data as it is read. The data is filtered 
+% using a two-pass bandpass filter between 20 and 500 Hz, order 4.
 
-    dataset = sprintf('%s/sub-P%04d/emg/sub-P%04d_task-observation_emg.vhdr', bidsdir, subjindx, subjindx);
+    dataset = sprintf('%s/sub-P%04d/beh/sub-P%04d_task-observation_emg.vhdr', bidsdir, subjindx, subjindx);
 
     %% Reading and filtering data
     cfg = [];
@@ -133,18 +131,16 @@ for subjindx = 1:100 % for each subject from number 1 to 100
     cfg.dataset   = dataset;
     cfg.montage   = montage; % this was set in the previous section
     data = ft_preprocessing(cfg);
-    
-    % Rectifying the data
-    % The data is full-wave rectified, a process where the negative values are converted 
-    % to positive ones. In this case, we use the absolute values in the signal. 
+% Rectifying the data
+% The data is full-wave rectified, a process where the negative values are converted 
+% to positive ones. In this case, we use the absolute values in the signal. 
 
     data.trial{:} =  abs(data.trial{:}); % Rectification of signal
-    
-    % Reading in the events
-    % In this part, we read in the events from the data. The events from the BrainVision 
-    % system have a letter prefix, which we do not need, so we remove it to only keep 
-    % the event number. We then filter out any events that don't correspond to the 
-    % emotions of interest (happy or sad).
+% Reading in the events
+% In this part, we read in the events from the data. The events from the BrainVision 
+% system have a letter prefix, which we do not need, so we remove it to only keep 
+% the event number. We then filter out any events that don't correspond to the 
+% emotions of interest (happy or sad).
 
     % read events from data
     event = ft_read_event(dataset, 'type', 'Response', 'readbids', false);
@@ -156,15 +152,14 @@ for subjindx = 1:100 % for each subject from number 1 to 100
     
     % removing unnecessarey events
     event(~ismember([event.value], response)) = []; 
-    
-    %% Identify artifacts
-    % In this section, we identify artifacts present in the data by performing the 
-    % following steps:
-    %
-    % * Segmenting the continuous data into 1-second segments with no overlap.
-    % * Detecting artifacts by checking if the mean of each 1s segment is more than 
-    % three standard deviations away from the mean of the overall channel. This is 
-    % done independently for each channel.
+% Identify artifacts
+% In this section, we identify artifacts present in the data by performing the 
+% following steps:
+%% 
+% * Segmenting the continuous data into 1-second segments with no overlap.
+% * Detecting artifacts by checking if the mean of each 1s segment is more than 
+% three standard deviations away from the mean of the overall channel. This is 
+% done independently for each channel.
 
     % Segmenting continuos data in 1s segments data with no overlap 
     cfg = [];
@@ -177,18 +172,18 @@ for subjindx = 1:100 % for each subject from number 1 to 100
     Sd = std(data.trial{:},0,2);    % std for each channel
 
     M_seg       = cell2mat(cellfun(@(x) mean(x, 2), data_seg.trial,'UniformOutput', false));  % mean of each trial
-    rejection   = abs(M_seg(1,:)) > (Me(1)+3*Sd(1)) | abs(M_seg(2,:)) > (Me(2)+3*Sd(2));      % check if the mean is higher than 3sd
-    artifacts   = data_seg.sampleinfo(find(rejection),:); % specific trials containing artifacts
+    Rejection   = abs(M_seg(1,:)) > (Me(1)+3*Sd(1)) | abs(M_seg(2,:)) > (Me(2)+3*Sd(2));  % check if the mean is higher 
+    % than 3sd
+    Artifacts   = data_seg.sampleinfo(find(Rejection),:); % specific trials containing artifacts
 
     % Print details
-    Rej_N   = length(rejection(rejection == 1));
-    Total_N = length(rejection);
+    Rej_N   = length(Rejection(Rejection == 1));
+    Total_N = length(Rejection);
+% Segment into trials 
+% In this part, we segment the data into trials using the event triggers that 
+% signal the presentation of the facial expressions and the start of each trial. 
 
-    %% Segment into trials 
-    % In this part, we segment the data into trials using the event triggers that 
-    % signal the presentation of the facial expressions and the start of each trial. 
-
-    % Segment and clean data
+    %% Segment and clean data
 
     % Triggers selections
     numericvalue    = [happy, sad];
@@ -208,39 +203,61 @@ for subjindx = 1:100 % for each subject from number 1 to 100
     cfg         = ft_definetrial(cfg);
     data_trl    = ft_redefinetrial(cfg, data);
     
-    % Remove artifacts 
-    % We reject any trials containing artifacts we previously identified, resulting 
-    % in clean EMG data for further analysis.
+% Remove artifacts 
+% We reject any trials containing artifacts we previously identified, resulting 
+% in clean EMG data for further analysis.
 
     % Remove artifacts
     cfg = [];
-    cfg.artfctdef.summary.artifact = artifacts;
+    cfg.artfctdef.summary.artifact = Artifacts;
     cfg.artfctdef.reject = 'complete';
     data_trl_clean = ft_rejectartifact(cfg, data_trl);
+% Plotting the data
+% Here we can look the first 3 trials of the 1 subject after the preprocessing 
+% and artifact rejection
 
-    %% Save intermediate results and preprocessed data
-
-    mkdir(fullfile(outputdir, sprintf('sub-P%04d', subjindx)))
-
-    outputfile = fullfile(outputdir, sprintf('sub-P%04d', subjindx), 'data.mat');
-    save(outputfile, 'data')
-    outputfile = fullfile(outputdir, sprintf('sub-P%04d', subjindx), 'event.mat');
-    save(outputfile, 'event')
-    outputfile = fullfile(outputdir, sprintf('sub-P%04d', subjindx), 'rejection.mat');
-    save(outputfile, 'rejection')
-    outputfile = fullfile(outputdir, sprintf('sub-P%04d', subjindx), 'artifacts.mat');
-    save(outputfile, 'artifacts')
-    outputfile = fullfile(outputdir, sprintf('sub-P%04d', subjindx), 'data_seg.mat');
-    save(outputfile, 'data_seg')
-    outputfile = fullfile(outputdir, sprintf('sub-P%04d', subjindx), 'data_trl.mat');
-    save(outputfile, 'data_trl')
-    outputfile = fullfile(outputdir, sprintf('sub-P%04d', subjindx), 'data_trl_clean.mat');
-    save(outputfile, 'data_trl_clean')
-
-    %% Processing
-    % MAV and baseline extraction 
-    % In this section, we extract the mean absolute value (MAV) of each trial and 
-    % the MAV of the corresponding baseline. 
+    if subjindx ==1
+        figure()
+        
+        subplot(2, 3, 1);
+        plot(data_trl.time{1}, data_trl.trial{1}(1,:), 'b')
+        title('Trial1')
+        subplot(2, 3, 4); 
+        plot(data_trl.time{1}, data_trl.trial{1}(2,:), 'r')
+        
+        subplot(2, 3, 2);
+        plot(data_trl.time{1}, data_trl.trial{2}(1,:), 'b')
+        title('Trial2')        
+        subplot(2, 3, 5); 
+        plot(data_trl.time{1}, data_trl.trial{2}(2,:), 'r')
+        
+        subplot(2, 3, 3);
+        plot(data_trl.time{1}, data_trl.trial{3}(1,:), 'b')
+        title('Trial2')        
+        subplot(2, 3, 6); 
+        plot(data_trl.time{1}, data_trl.trial{3}(2,:), 'r')        
+        
+        % Set labels for the two axes.
+        ylabel(subplot(2, 3, 1), {'Corrugator','mV'});
+        ylabel(subplot(2, 3, 4), {'Zygomaticus','mV'});
+        
+        % settign ylims
+        ylim(subplot(2, 3, 1), [-1, inf]); ylim(subplot(2, 3, 2), [-1, inf]);
+        ylim(subplot(2, 3, 3), [-1, inf]); ylim(subplot(2, 3, 4), [-1, inf])
+        ylim(subplot(2, 3, 5), [-1, inf]); ylim(subplot(2, 3, 6), [-1, inf])
+        
+        xlim(subplot(2, 3, 1), [-0.7, inf]); xlim(subplot(2, 3, 2), [-0.7, inf]);
+        xlim(subplot(2, 3, 3), [-0.7, inf]); xlim(subplot(2, 3, 4), [-0.7, inf])
+        xlim(subplot(2, 3, 5), [-0.7, inf]); xlim(subplot(2, 3, 6), [-0.7, inf])
+        
+        % Set the title of the figure.
+        sgtitle('EMG signal after basic preprocessing and artifact rejection');
+        
+    end
+%% Processing
+% MAV and baseline extraction 
+% In this section, we extract the mean absolute value (MAV) of each trial and 
+% the MAV of the corresponding baseline. 
 
     % Select baseline and data for each segment
     for i=1:numel(data_trl_clean.trial)
@@ -253,54 +270,106 @@ for subjindx = 1:100 % for each subject from number 1 to 100
         active_zyg(i)     = mean(data_trl_clean.trial{i}(2,begsample:endsample)); % mav of the segment for the zygomaticus
     end
     
-    % Baseline correction
-    % We normalise the data to the basline by dividing the MAV of each trial by 
-    % the MAV of its respective baseline.
+% Baseline correction
+% We normalise the data to the basline by dividing the MAV of each trial by 
+% the MAV of its respective baseline.
 
     % Divide by baseline
     Corr = (active_corr./baseline_corr)';
     Zyg  = (active_zyg./baseline_zyg)';
-    
-    % Trial division into conditions
-    % We extract the condition of each trial based on the event triggers. 
+% Plot extracted fearures
+% Here again we take a look at the first 3 trials of the 1st subject after extacting 
+% the mean absolute value and baseline correction
+
+    muscles = categorical({'Corrugator', 'Zygomaticus'});
+
+    if subjindx == 1
+        figure()
+        
+        subplot(1,3,1)
+        hold on
+        bar(muscles(1),Corr(1), 'b')
+        bar(muscles(2),Zyg(1), 'r')
+        title('Trial1')
+        
+        subplot(1,3,2)
+        hold on
+        bar(muscles(1),Corr(2), 'b')
+        bar(muscles(2),Zyg(2), 'r')
+        title('Trial2')
+        
+        subplot(1,3,3)
+        hold on
+        bar(muscles(1),Corr(3),'b')
+        bar(muscles(2),Zyg(3), 'r')
+        title('Trial3')
+        
+        ylabel(subplot(1, 3, 1), {'Mean absolute value'});
+        sgtitle('EMG signal after MAV extraction and baseline correction');
+    end
+% Trial division into conditions
+% We extract the condition of each trial based on the event triggers. 
 
     % map the trials onto condition codes
     Condition = nan(size(data_trl_clean.trialinfo));
     Condition(ismember(data_trl_clean.trialinfo, happy))    = 1;
     Condition(ismember(data_trl_clean.trialinfo, sad))      = 2;   
-
-    %% Integrating the data into a table
-    % Here we put all the data from one subject into a table for standardisation. 
+% Integrating the data into a table
+% Here we put all the data from one subject into a table for standardisation. 
 
     % Integrate all in a table
     Subject = repmat(subjindx,length(Condition),1);
-    MAV_corrected = table(Subject, Condition, Corr,Zyg)
-    
-    % Standardisation within muscle
-    % The data is standardised within muscle using z-scoring. 
+    MAV_corrected = table(Subject, Condition, Corr,Zyg);
+% Standardisation within muscle
+% The data is standardised within muscle using z-scoring,  then saved into the 
+% table. 
 
-    Standardization_WMuscle = zscore(MAV_corrected{:,3:4},0,1);         % standardisation of the data by zscoring within muscle
+    Standardization_WMuscle = zscore(MAV_corrected{:,3:4},0,1);         % standardisation of the data by zscoring 
+    % within muscle
     
-    % Standardisation within subject
-    % The data is first standardised within subject by using z-scoring, then saved 
-    % into the table. 
+    MAV_corrected{:,3:4} = Standardization_WMuscle;    % replacing data into the table   
+% Plot standardized data
 
-    Standardization_WSubject = zscore(Standardization_WMuscle,0,'all'); % standardisation of the data by zscoring within subject
+    muscles = categorical({'Corrugator', 'Zygomaticus'});  
 
-    MAV_corrected{:,3:4} = Standardization_WSubject;    % replacing data into the table
-    
-    %% Appending the data 
-    % In this section, we append the data extracted for each specific subject to 
-    % the general table called |FinalData|, which we created at the beginning of the 
-    % pipeline. This process enables us to save the processed data from all subjects 
-    % into a single table.
-    % 
-    % Before appending the data, we first calculate the average value for each condition 
-    % (happy and sad) by finding the grouping between conditions using findgroups.
-    % 
-    % Additionally, to keep the script clean and efficient, we clear some variables 
-    % that are no longer needed in the subsequent iterations of the loop or the rest 
-    % of the script.
+    if subjindx == 1
+        figure()
+        
+        subplot(1,3,1)
+        hold on
+        bar(muscles(1),MAV_corrected.Corr(1), 'b')
+        bar(muscles(2),MAV_corrected.Zyg(1), 'r')
+        title('Trial1')
+        
+        subplot(1,3,2)
+        hold on
+        bar(muscles(1),MAV_corrected.Corr(2), 'b')
+        bar(muscles(2),MAV_corrected.Zyg(2), 'r')
+        title('Trial2')
+        
+        subplot(1,3,3)
+        hold on
+        bar(muscles(1),MAV_corrected.Corr(3),'b')
+        bar(muscles(2),MAV_corrected.Zyg(3), 'r')
+        title('Trial3')
+        
+        % Link the y-axes of the two subplots.
+        linkaxes([subplot(1,3,1), subplot(1,3,2), subplot(1,3,3)], 'y');
+        ylabel(subplot(1, 3, 1), {'Standardized mean absolute value'});
+        sgtitle('MAV values after standardization');
+    end
+% Appending the data 
+% In this section, we append the data extracted for each specific subject to 
+% the general table called 'FinalData', which we created at the beginning of the 
+% pipeline. This process enables us to save the processed data from all subjects 
+% into a single table.
+% 
+% Before appending the data, we first calculate the average value for each condition 
+% (happy and sad) by finding the grouping between conditions using findgroups.
+% 
+% Additionally, to keep the script clean and efficient, we clear some variables 
+% that are no longer needed in the subsequent iterations of the loop or the rest 
+% of the script.
 
     % Extracting the average for each condition 
     [Grouping , Group_table]  = findgroups(MAV_corrected(:,1:2));     % finding the grouping between subjects and 
@@ -318,8 +387,7 @@ for subjindx = 1:100 % for each subject from number 1 to 100
     clearvars -except FinalData montage response sad happy *dir *Group   % clearing some variables
     
 end
-
-%% Save the data
+% Save the data
 % After completing the processing of the EMG data for all subjects, we can now 
 % save our processed data to a CSV file. The  'writetable' function is used to 
 % write the contents of the 'FinalData'  table to a file named 'ProcessedData.csv' 
@@ -327,8 +395,8 @@ end
 % analysis of the data.
 
 writetable(FinalData, fullfile(outputdir,'ProcessedData.csv'))
-
-
+%% 
+% 
 %% References
 % Gorgolewski, K.J., Auer, T., Calhoun, V.D., Craddock, R.C., Das, S., Duff, 
 % E.P., Flandin, G., Ghosh, S.S., Glatard, T., Halchenko, Y.O., Handwerker, D.A., 
@@ -347,7 +415,7 @@ writetable(FinalData, fullfile(outputdir,'ProcessedData.csv'))
 % Rutkowska, J.M., Ghilardi, T., Vacaru, S.V., van Schaik J.E., Meyer M., Hunnius, 
 % S., & Oostenveld, R. (2023). Optimising the processing of surface facial EMG 
 % to detect emotional expressions: recommended pipeline. Version 1. Radboud University. 
-% (dataset). https://doi.org/10.34973/ew6p-x929
+% (dataset). <https://doi.org/10.34973/ew6p-x929 https://doi.org/10.34973/ew6p-x929>
 % 
 % Vacaru, S. V., van Schaik, J. E., Spiess, L., & Hunnius, S. (2021). No evidence 
 % for modulation of facial mimicry by attachment tendencies in adulthood: An EMG 

@@ -5,7 +5,7 @@ library(cowplot)
 
 ####### Settings ---------------------------------------------------------------
 
-setwd("C:\\Users\\krav\\Desktop\\BabyBrain\\Projects\\EMG") #project dir
+setwd("C:\\Users\\tomma\\Desktop\\BabyBrain\\Projects\\EMG") #project dir
 output_dir = "./Results\\"
 
 SE <- function(xx) {
@@ -28,31 +28,6 @@ AUC = AUC %>%
   mutate(Model=factor(Model, levels=Model))
 
 
-### newtest
-library(ggforce)
-AUC$Numb =  1:nrow(AUC)
-
-ggplot(AUC, aes( y = AUC, x = Numb, color =Model))+
-  geom_point2(size =3.5)+
-  geom_errorbar(aes(ymin = AUC-Err, ymax = AUC+Err), width = 0.2, linewidth =1.5)+
-  labs(x = "", y = "Area Under the Curve")+
-  scale_color_see()+
-  theme_gray(base_size=15)+
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
-        axis.text.y = element_text(size=20),
-        axis.title.y = element_text(size=20),
-        legend.position="none", legend.box="horizontal")+
-  guides(colour = guide_legend(nrow = 6))+
-  scale_x_continuous(breaks = AUC$Numb ,
-                     labels = AUC$Model)+
-  
-  facet_zoom(x = Numb > 49,horizontal = F, ylim = c(0.75, 0.80),zoom.size = 0.5)
-
-ggsave2(paste(output_dir, 'Figures','Facet.png', sep = '\\'),
-        width = 50,  height = 28,  units = "cm",  dpi = 300)
-
-
-
 
 ## Plot
 notzoomed = ggplot(AUC, aes( y = AUC, x = Model, color =Model))+
@@ -62,7 +37,7 @@ notzoomed = ggplot(AUC, aes( y = AUC, x = Model, color =Model))+
   annotate("rect", xmin =48.5, xmax = 72.5, ymin = 0.75, ymax = 0.82,alpha = .2)+
   scale_color_see()+
   theme_bw(base_size=15)+
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
+  theme(axis.text.x = element_text(angle = 50, vjust = 1, hjust=1, size=12),
         axis.text.y = element_text(size=20),
         axis.title.y = element_text(size=20),
         legend.position="none", legend.box="horizontal")+
@@ -80,9 +55,12 @@ zoomed = ggplot(AUC, aes( y = AUC, x = Model, color =Model))+
   scale_x_discrete(limits =AUC[AUC['AUC']>= 0.75,]$Model)+
   ylim(0.76,0.791)
   
-plot_grid(notzoomed, zoomed, nrow = 2,rel_heights = c(5,3))
-ggsave2(paste(output_dir, 'Figures','AucPlot_double.png', sep = '\\'),
+plot_grid(notzoomed, NULL, zoomed, nrow = 3,rel_heights = c(5,0.2,3))
+ggsave2(paste(output_dir, 'Figures','AucPlot_double.jpg', sep = '\\'),
         width = 50,  height = 28,  units = "cm",  dpi = 300)
+
+
+
 
 
 

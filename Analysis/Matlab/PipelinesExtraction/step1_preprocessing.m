@@ -6,9 +6,9 @@ interactive = false;
 %% Setting paths
 % data and result folder are in the same lcoation as script folder
 
-cd C:\Users\krav\Desktop\BabyBrain\Projects\EMG\  % project dir
+cd C:\Users\tomma\Desktop\BabyBrain\Projects\EMG\  % project dir
 bidsdir   = '.\Data\Bids';
-outputdir = '.\Processing';
+outputdir = '.\Data\Processing';
 
 % add all the scripts to the path
 Script_path = matlab.desktop.editor.getActiveFilename;
@@ -73,8 +73,8 @@ montage.tra = [
 Rejection_Summary = NaN(100,4); 
 
 % Prepare pipeline struct
-Pipelines.Raw = [];
-Pipelines.Average = [];
+Pipelines.Ab = [];
+Pipelines.Aa = [];
 
 for subjindx = 1:100
 
@@ -192,12 +192,12 @@ for subjindx = 1:100
       
     % Calculate idexes on all trials
     step2_pipeline_RMSs;
-    step2_pipeline_AUCs;
+    step2_pipeline_iEMGs;
     step2_pipeline_MAVs;
 
     % Calculate idexes on average of trials
     step2_pipeline_RMSa;
-    step2_pipeline_AUCa;
+    step2_pipeline_iEMGa;
     step2_pipeline_MAVa;
 
     clear Artifacts

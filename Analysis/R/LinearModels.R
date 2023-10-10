@@ -33,11 +33,10 @@ Interpolation =  function(Data) {
 
 ####### Settings ---------------------------------------------------------------
 
-setwd("C:\\Users\\krav\\Desktop\\BabyBrain\\Projects\\EMG")
-
+setwd("C:\\Users\\tomma\\Desktop\\BabyBrain\\Projects\\EMG")
 input_dir    = "./Data\\Processing\\Pipelines"
 output_dir   = "./Results\\"
-subsets_path = "./SubsamplePipelines\\Subsamples.Rda"
+subsets_path = "./Data\\SubsamplePipelines\\Subsamples.Rda"
 
 Iterations   = 500
 

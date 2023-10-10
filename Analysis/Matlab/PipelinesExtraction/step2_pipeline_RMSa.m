@@ -8,7 +8,7 @@
 % Values of RMS are normalized subtracting baseline from trial
 % Values exctracted for corrugator zygomaticus and ratio of the 2
 
-Data_type = 'Average';
+Data_type = 'Ab';
 Index = 'RMS';
 
 rms = @(x) sqrt(mean(x.^2,2)); % root mean square formula
@@ -82,16 +82,16 @@ if isfield( Pipelines.(Data_type), Index)
 else
         
     Pipelines.(Data_type).(Index)(1).data = data_export_not_corrected;
-    Pipelines.(Data_type).(Index)(1).BaselineCorrection = '0';
+    Pipelines.(Data_type).(Index)(1).BaselineCorrection = 'Bn';
 
     Pipelines.(Data_type).(Index)(2).data = d_data_export;
-    Pipelines.(Data_type).(Index)(2).BaselineCorrection = 'D';
+    Pipelines.(Data_type).(Index)(2).BaselineCorrection = 'Bd';
 
     Pipelines.(Data_type).(Index)(3).data = s_data_export;
-    Pipelines.(Data_type).(Index)(3).BaselineCorrection = 'S';
+    Pipelines.(Data_type).(Index)(3).BaselineCorrection = 'Bs';
     
-    [Pipelines.(Data_type).(Index).MuscleStandadization] = deal('0','0','0');
-    [Pipelines.(Data_type).(Index).SubjectStandadization] = deal('0','0','0');
+    [Pipelines.(Data_type).(Index).MuscleStandadization] = deal('Mn','Mn','Mn');
+    [Pipelines.(Data_type).(Index).SubjectStandadization] = deal('Sn','Sn','Sn');
 
 end
 

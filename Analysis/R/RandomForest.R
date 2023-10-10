@@ -7,7 +7,7 @@ library(cowplot)
 
 ####### Settings ---------------------------------------------------------------
 
-setwd("C:\\Users\\krav\\Desktop\\BabyBrain\\Projects\\EMG")
+setwd("C:\\Users\\tomma\\Desktop\\BabyBrain\\Projects\\EMG")
 
 output_dir = "./Results\\"
 set.seed(123)
@@ -20,17 +20,20 @@ df = read.csv(file=paste(output_dir,"AUC.csv", sep  = "\\"))
 #Extract columns from string
 db = data.frame(str_split_fixed(df$Model, "_", 3))
 colnames(db) <- c('Index','Type','x3')
-dc = data.frame(str_split_fixed(db$x3, "", 3))
+dc = data.frame(str_split_fixed(db$x3, "_", 3))
 colnames(dc) <- c('Baseline','W_Muscle','W_Subject')
 
 data = bind_cols(df,db[c('Index', 'Type')], dc[c('Baseline','W_Muscle','W_Subject')])
 
+#Renaming for clarity
+data[data == 'Bn' | data== 'Sn' | data == 'Mn'] = 'Not done'
+data[data$Baseline == 'Bd',]$Baseline  = 'Division'
+data[data$Baseline == 'Bs',]$Baseline  = 'Substraction'
+data[data$W_Muscle == 'Ms',]$W_Muscle  = 'Done' 
+data[data$W_Subject == 'Ss',]$W_Subject= 'Done'
 
-data[data == '0'] = 'Not done'
-data[data$Baseline == 'D',]$Baseline  = 'Division'
-data[data$Baseline == 'S',]$Baseline  = 'Substraction'
-data[data$W_Muscle == 'M',]$W_Muscle  = 'Done' 
-data[data$W_Subject == 'S',]$W_Subject= 'Done' 
+data[data$Index =='Ab',]$Index = 'Average'
+data[data$Index =='Aa',]$Index = 'Raw'
 
 data = data %>%
   mutate(across(c(Index,Type,Baseline,W_Muscle,W_Subject), factor))%>%
@@ -106,7 +109,7 @@ c$indx = 'Baseline correction'
 
 d = as.data.frame(partialPlot(model,data_train, x.var='Index',plot = F))
 d$indx ='Signal averaging'
-d = d %>% mutate(x, x = ifelse(x =='A', "First step", "Last step"))
+d = d %>% mutate(x, x = ifelse(x =='Average', "First step", "Last step"))
 
 e = as.data.frame(partialPlot(model,data_train, x.var='Type',plot = F))
 e$indx =  'Feature of interest'
@@ -116,7 +119,7 @@ db = bind_rows(a,b,c,d,e)
 
 # changing factor levels order to make plot nicer
 db$indx = factor(db$indx, levels = c('Standardisation within muscle', 'Standardisation within subject', 'Baseline correction', 'Signal averaging','Feature of interest')) 
-db$x =  factor(db$x, levels = c('Division','Substraction', 'Done', 'Not done', 'MAV','RMS','AUC','Last step','First step' ))
+db$x =  factor(db$x, levels = c('Division','Substraction', 'Done', 'Not done', 'MAV','RMS','iEMG','Last step','First step' ))
 
 
 partialplot= ggplot(db, aes(x= x,y = y, fill=  indx))+
