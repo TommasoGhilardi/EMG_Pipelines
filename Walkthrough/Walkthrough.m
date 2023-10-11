@@ -31,10 +31,10 @@
 % for all the processing steps. It first extracts mean absolute value (MAV) as 
 % the feature of interest, and then implements baseline correction by dividing 
 % the activity from each trial by the activity during the baseline period. Next, 
-% the data is standardised within muscles and within subjects by z-scoring accordingly. 
-% Finally, the data is averaged across trials, which makes it ready for statistical 
-% analysis. The pipeline is provided as a separate script in the same repository 
-% as the data (Rutkowska et al., 2023) and in our github repository: <https://github.com/TommasoGhilardi/EMG_Pipelines 
+% the data is standardised within muscles by z-scoring accordingly. Finally, the 
+% data is averaged across trials, which makes it ready for statistical analysis. 
+% The pipeline is provided as a separate script in the same repository as the 
+% data (Rutkowska et al., 2023) and in our github repository: <https://github.com/TommasoGhilardi/EMG_Pipelines 
 % https://github.com/TommasoGhilardi/EMG_Pipelines>  
 %% Preparation
 % Before pre-processing, the data needs to be prepared in Fieldtrip. This entails 
